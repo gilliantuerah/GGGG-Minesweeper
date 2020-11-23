@@ -36,13 +36,7 @@ def printBoard(size,board):
             else:
                 print(board[i][j],end=" ")
 
-
-size,listOfMines=inputFromUser()
-# print(size)
-# print(listOfMines)
-# for m in listOfMines:
-#     print(m[0])
-#     print(m[1])
-#     print("=========")
-board=generateBoardValue(size,listOfMines)
-printBoard(size,board)
+if __name__ == "__main__":
+    size,listOfMines=inputFromUser()
+    board=generateBoardValue(size,listOfMines)
+    printBoard(size,board)
