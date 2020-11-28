@@ -1,4 +1,11 @@
+from clips import Environment
+
+
 def generateBoardValue(size,listOfMines):
+    '''
+    Fungsi untuk mengembalikan board matriks yang sudah berisikan nilai
+    sesuai masukan koordinat mine dari user
+    '''
     # init matrix size x size
     board=[[0 for i in range(size)] for j in range(size)]
 
@@ -21,5 +28,14 @@ def generateBoardValue(size,listOfMines):
             if(x[i]>=0)and(y[i]>=0)and(board[x[i]][y[i]]!='m'):
                 # jika koordinat valid
                 board[x[i]][y[i]]+=1
+    
+    
     return board
+
+def addToClips(size,board):
+    for i in range(size):
+        for j in range(size):
+            var=str(i)+"_"+str(j)
+            var=clips.BuildGlobal("x",board[i][j])
+
        

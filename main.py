@@ -1,4 +1,4 @@
-from processMatrix import generateBoardValue
+from processMatrix import generateBoardValue,addToClips
 
 def inputFromUser():
     '''
@@ -39,4 +39,5 @@ def printBoard(size,board):
 if __name__ == "__main__":
     size,listOfMines=inputFromUser()
     board=generateBoardValue(size,listOfMines)
+    addToClips(size,board)
     printBoard(size,board)
