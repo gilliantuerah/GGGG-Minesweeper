@@ -70,6 +70,10 @@ if __name__ == "__main__":
     #     print(fact)
     # run clips
     env.run()
+
     # facts
-    # for fact in env.facts():
-    #     print(fact)
+    for fact in env.templates():
+        print(fact)
+    
+    # print(env.strategy)
+        

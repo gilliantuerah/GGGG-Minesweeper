@@ -332,46 +332,8 @@
 ;;; Rule 1: Kalo jumlah unopened = value dari (kotak tersebut - jumlah flag) -> mark mine
 ;;; *************************************************************************************
 
-; (defrule countUnopenedPojok1
-;     ?f <- (boxValue (x 0) (y 0) (value ?value) (flagcount ?count) (opened ?opened))
-;     =>
-;     (modify ?f (flagcount (+ ?count 1)))
-; )
-
-; (defrule countUnopenedPojok2
-;     (boxValue (x 0) (y ) (value ?value) (flagcount ?count) (opened ?opened))
-; )
-
-; (defrule countUnopenedPojok3
-;     (boxValue (x ) (y 0) (value ?value) (flagcount ?count) (opened ?opened))
-; )
-
-; (defrule countUnopenedPojok4
-;     (boxValue (x ) (y ) (value ?value) (flagcount ?count) (opened ?opened))
-; )
-
-; (defrule countUnopenedPinggirAtas
-;     (boxValue (x ) (y 0) (value ?value) (flagcount ?count) (opened ?opened))
-; )
-
-; (defrule countUnopenedPinggirKiri
-;     (boxValue (x 0) (y ) (value ?value) (flagcount ?count) (opened ?opened))
-; )
-
-; (defrule countUnopenedPinggirKanan
-;     (boxValue (x ) (y 0) (value ?value) (flagcount ?count) (opened ?opened))
-; )
-
-; (defrule countUnopenedPinggirBawah
-;     (boxValue (x ) (y ) (value ?value) (flagcount ?count) (opened ?opened))
-; )
-
-;;; *************************************************************************************
-;;; Rule 1: Kalo jumlah unopened = value dari (kotak tersebut - jumlah flag) -> mark mine
-;;; *************************************************************************************
-
 (defrule markval
-    ; BELOM COVER POJOK GAN CAPE
+    (sizeBoardPython(n ?size))
     (boxValue (x ?x) (y ?y) (value ?val) (flagcount ?flag) (opened ?opened))
     (test(= ?val (+ ?flag (- 8 ?opened))))
     ; modify fakta countMine
@@ -379,38 +341,64 @@
     
     =>
     ; ditandain pake facts
-    (assert(cekMarkVal (x (+ ?x 1)) (y (+ ?y 1))))
-    (assert(cekMarkVal (x (+ ?x 1)) (y ?y)))
-    (assert(cekMarkVal (x (+ ?x 1)) (y (- ?y 1))))
-    (assert(cekMarkVal (x ?x) (y (+ ?y 1))))
-    (assert(cekMarkVal (x ?x) (y (- ?y 1))))
-    (assert(cekMarkVal (x (- ?x 1)) (y (- ?y 1))))
-    (assert(cekMarkVal (x (- ?x 1)) (y ?y)))
-    (assert(cekMarkVal (x (- ?x 1)) (y (+ ?y 1))))
+    (if (and (= ?x 0) (= ?y 0)) then ;Kiri atas
+        (assert (cekMarkVal (x (+ ?x 1)) (y (+ ?y 1))))
+        (assert (cekMarkVal (x (+ ?x 1)) (y ?y)))
+        (assert (cekMarkVal (x ?x) (y (+ ?y 1))))
+        else ( if (and (= ?x 0) (= ?y ?size)) then  ; Kanan atas 
+            (assert (cekMarkVal (x (+ ?x 1)) (y ?y)))
+            (assert (cekMarkVal (x (+ ?x 1)) (y (- ?y 1))))
+            (assert (cekMarkVal (x ?x) (y (- ?y 1))))
+            else( if (and (= ?x ?size) (= ?y 0)) then; Kiri bawah
+                (assert (cekMarkVal (x (- ?x 1)) (y ?y)))
+                (assert (cekMarkVal (x (- ?x 1)) (y (+ ?y 1))))
+                (assert (cekMarkVal (x ?x) (y (+ ?y 1)))) 
+                else ( if (and (= ?x ?size) (= ?y ?size)) then ; Kanan Bawah
+                    (assert (cekMarkVal (x (- ?x 1)) (y ?y)))
+                    (assert (cekMarkVal (x (- ?x 1)) (y (- ?y 1))))
+                    (assert (cekMarkVal (x ?x) (y (- ?y 1)))) 
+                    else ( if (= ?x 0) then ; Baris Atas
+                        (assert (cekMarkVal (x (+ ?x 1)) (y (+ ?y 1))))
+                        (assert (cekMarkVal (x (+ ?x 1)) (y ?y)))
+                        (assert (cekMarkVal (x (+ ?x 1)) (y (- ?y 1))))
+                        (assert (cekMarkVal (x ?x) (y (- ?y 1))))
+                        (assert (cekMarkVal (x ?x) (y (+ ?y 1))))
+                        else( if (= ?y 0) then ; Kolom kiri 
+                            (assert (cekMarkVal (x (+ ?x 1)) (y (+ ?y 1))))
+                            (assert (cekMarkVal (x (+ ?x 1)) (y ?y)))
+                            (assert (cekMarkVal (x ?x) (y (+ ?y 1))))
+                            (assert (cekMarkVal (x (- ?x 1)) (y ?y)))
+                            (assert (cekMarkVal (x (- ?x 1)) (y (+ ?y 1))))
+                            else( if (= ?x ?size) then ;Baris bawah
+                                (assert (cekMarkVal (x ?x) (y (- ?y 1))))
+                                (assert (cekMarkVal (x ?x) (y (+ ?y 1))))
+                                (assert (cekMarkVal (x (- ?x 1)) (y (- ?y 1))))
+                                (assert (cekMarkVal (x (- ?x 1)) (y ?y)))
+                                (assert (cekMarkVal (x (- ?x 1)) (y (+ ?y 1))))
+                                else( if (= ?y ?size) then ; Kolom kanan
+                                    (assert (cekMarkVal (x (+ ?x 1)) (y ?y)))
+                                    (assert (cekMarkVal (x (+ ?x 1)) (y (- ?y 1))))
+                                    (assert (cekMarkVal (x ?x) (y (- ?y 1))))
+                                    (assert (cekMarkVal (x (- ?x 1)) (y (- ?y 1))))
+                                    (assert (cekMarkVal (x (- ?x 1)) (y ?y)))
+                                    else ;Sisanya brow
+                                        (assert (cekMarkVal (x (+ ?x 1)) (y (+ ?y 1))))
+                                        (assert (cekMarkVal (x (+ ?x 1)) (y ?y)))
+                                        (assert (cekMarkVal (x (+ ?x 1)) (y (- ?y 1))))
+                                        (assert (cekMarkVal (x ?x) (y (- ?y 1))))
+                                        (assert (cekMarkVal (x ?x) (y (+ ?y 1))))
+                                        (assert (cekMarkVal (x (- ?x 1)) (y (- ?y 1))))
+                                        (assert (cekMarkVal (x (- ?x 1)) (y ?y)))
+                                        (assert (cekMarkVal (x (- ?x 1)) (y (+ ?y 1))))       
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
 )
-
-    ; (
-    ;     if (not( opened (x ?x) (y (- ?y 1)))) then 
-    ;         (assert (opened (x (+ ?x 1)) (y (- ?y 1))))
-    ;         (assert(markMine(x ?x) (y (- ?y 1))))   
-    ; )
-    ; (
-    ;     if (not(opened (x (- ?x 1)) (y (- ?y 1)))) then 
-    ;         (assert(opened(x (- ?x 1)) (y (- ?y 1))))
-    ;         (assert(markMine(x (- ?x 1)) (y (- ?y 1))))             
-    ; )
-    ; (
-    ;     if (not(opened (x (- ?x 1)) (y ?y))) then 
-    ;         (assert(opened(x (- ?x 1)) (y ?y)))
-    ;         (assert(markMine(x (- ?x 1)) (y ?y)))             
-    ; )
-    ; (
-    ;     if (not(opened (x (- ?x 1)) (y (+ ?y 1)))) then 
-    ;         (assert(opened(x (- ?x 1)) (y (+ ?y 1))))
-    ;         (assert(markMine(x (- ?x 1)) (y (+ ?y 1))))             
-    ; )
-    ; ; ngurangin countMine sebanyak jumlah unpoened
-    ; (modify ?f1 (n (- ?nilai ?opened)))
 
 (defrule markValOppened
     ; udah kebuka
@@ -442,19 +430,77 @@
 ;;; *********************
 
 (defrule oneMineMarked
+    (sizeBoardPython(n ?size))
     ; ada satu yang sudah di markMine
     (boxValue (x ?x) (y ?y) (value ?val) (flagcount ?fl))
     ; jika flagcount=val , sisanya dibuka
     (test(= ?fl ?val))
     =>
-    (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
-    (assert (select (x (+ ?x 1)) (y ?y)))
-    (assert (select (x (+ ?x 1)) (y (- ?y 1))))
-    (assert (select (x ?x) (y (- ?y 1))))
-    (assert (select (x ?x) (y (+ ?y 1))))
-    (assert (select (x (- ?x 1)) (y (- ?y 1))))
-    (assert (select (x (- ?x 1)) (y ?y)))
-    (assert (select (x (- ?x 1)) (y (+ ?y 1))))
+    (if (and (= ?x 0) (= ?y 0)) then ;Kiri atas
+        (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
+        (assert (select (x (+ ?x 1)) (y ?y)))
+        (assert (select (x ?x) (y (+ ?y 1))))
+        else ( if (and (= ?x 0) (= ?y ?size)) then  ; Kanan atas 
+            (assert (select (x (+ ?x 1)) (y ?y)))
+            (assert (select (x (+ ?x 1)) (y (- ?y 1))))
+            (assert (select (x ?x) (y (- ?y 1))))
+            else( if (and (= ?x ?size) (= ?y 0)) then; Kiri bawah
+                (assert (select (x (- ?x 1)) (y ?y)))
+                (assert (select (x (- ?x 1)) (y (+ ?y 1))))
+                (assert (select (x ?x) (y (+ ?y 1)))) 
+                else ( if (and (= ?x ?size) (= ?y ?size)) then ; Kanan Bawah
+                    (assert (select (x (- ?x 1)) (y ?y)))
+                    (assert (select (x (- ?x 1)) (y (- ?y 1))))
+                    (assert (select (x ?x) (y (- ?y 1)))) 
+                    else ( if (= ?x 0) then ; Baris Atas
+                        (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
+                        (assert (select (x (+ ?x 1)) (y ?y)))
+                        (assert (select (x (+ ?x 1)) (y (- ?y 1))))
+                        (assert (select (x ?x) (y (- ?y 1))))
+                        (assert (select (x ?x) (y (+ ?y 1))))
+                        else( if (= ?y 0) then ; Kolom kiri 
+                            (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
+                            (assert (select (x (+ ?x 1)) (y ?y)))
+                            (assert (select (x ?x) (y (+ ?y 1))))
+                            (assert (select (x (- ?x 1)) (y ?y)))
+                            (assert (select (x (- ?x 1)) (y (+ ?y 1))))
+                            else( if (= ?x ?size) then
+                                (assert (select (x ?x) (y (- ?y 1))))
+                                (assert (select (x ?x) (y (+ ?y 1))))
+                                (assert (select (x (- ?x 1)) (y (- ?y 1))))
+                                (assert (select (x (- ?x 1)) (y ?y)))
+                                (assert (select (x (- ?x 1)) (y (+ ?y 1))))
+                                else( if (= ?y ?size) then
+                                    (assert (select (x (+ ?x 1)) (y ?y)))
+                                    (assert (select (x (+ ?x 1)) (y (- ?y 1))))
+                                    (assert (select (x ?x) (y (- ?y 1))))
+                                    (assert (select (x (- ?x 1)) (y (- ?y 1))))
+                                    (assert (select (x (- ?x 1)) (y ?y)))
+                                    else 
+                                        (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
+                                        (assert (select (x (+ ?x 1)) (y ?y)))
+                                        (assert (select (x (+ ?x 1)) (y (- ?y 1))))
+                                        (assert (select (x ?x) (y (- ?y 1))))
+                                        (assert (select (x ?x) (y (+ ?y 1))))
+                                        (assert (select (x (- ?x 1)) (y (- ?y 1))))
+                                        (assert (select (x (- ?x 1)) (y ?y)))
+                                        (assert (select (x (- ?x 1)) (y (+ ?y 1))))       
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
+    ; (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
+    ; (assert (select (x (+ ?x 1)) (y ?y)))
+    ; (assert (select (x (+ ?x 1)) (y (- ?y 1))))
+    ; (assert (select (x ?x) (y (- ?y 1))))
+    ; (assert (select (x ?x) (y (+ ?y 1))))
+    ; (assert (select (x (- ?x 1)) (y (- ?y 1))))
+    ; (assert (select (x (- ?x 1)) (y ?y)))
+    ; (assert (select (x (- ?x 1)) (y (+ ?y 1))))
 )
 ;;; *********************
 ;;; Rule 3: Kalo value == jumlah flag, buka yang belum dibuka
@@ -477,43 +523,215 @@
     (not(opened (x ?x)(y ?y)))
     ; ngambil value dari python
     (boxValuePython(x ?x)(y ?y)(value ?val))
+    (sizeBoardPython(n ?size))
 
     =>
     (assert(opened(x ?x)(y ?y)))
-    ; nambah fakta checkCountFlags
-    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
-    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
-    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
-    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
-    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
-    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
-    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
-    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
-    ; nambah fakta checkCountOpened
-    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
-    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
-    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
-    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
-    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
-    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
-    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
-    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
-
     (assert(boxValue (x ?x)(y ?y)(value ?val)(flagcount 0)(opened 0)))
+    ; nambah fakta checkCountFlags
+    (if (and (= ?x 0) (= ?y 0)) then ;Kiri atas
+        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
+        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+        else ( if (and (= ?x 0) (= ?y ?size)) then  ; Kanan atas 
+            (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+            (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
+            (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+            else( if (and (= ?x ?size) (= ?y 0)) then; Kiri bawah
+                (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+                (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
+                (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+                else ( if (and (= ?x ?size) (= ?y ?size)) then ; Kanan Bawah
+                    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+                    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+                    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
+                    else ( if (= ?x 0) then ; Baris Atas
+                        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
+                        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+                        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
+                        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+                        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+                        else( if (= ?y 0) then ; Kolom kiri 
+                            (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
+                            (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+                            (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+                            (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
+                            (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+                            else( if (= ?x ?size) then ; Baris bawah
+                                (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+                                (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+                                (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
+                                (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+                                (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
+                                else( if (= ?y ?size) then ; Kolom kanan
+                                    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+                                    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
+                                    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+                                    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+                                    (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
+                                    else ; Semua berhasil brow
+                                        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
+                                        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+                                        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
+                                        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+                                        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+                                        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
+                                        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+                                        (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
+    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
+    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
+    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
+    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
+    ; nambah fakta checkCountOpened
+    (if (and (= ?x 0) (= ?y 0)) then ;Kiri atas
+        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
+        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+        else ( if (and (= ?x 0) (= ?y ?size)) then  ; Kanan atas 
+            (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+            (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
+            (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+            else( if (and (= ?x ?size) (= ?y 0)) then; Kiri bawah
+                (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+                (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
+                (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+                else ( if (and (= ?x ?size) (= ?y ?size)) then ; Kanan Bawah
+                    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+                    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+                    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
+                    else ( if (= ?x 0) then ; Baris Atas
+                        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
+                        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+                        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
+                        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+                        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+                        else( if (= ?y 0) then ; Kolom kiri 
+                            (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
+                            (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+                            (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+                            (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
+                            (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+                            else( if (= ?x ?size) then ; Baris bawah
+                                (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+                                (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+                                (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
+                                (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+                                (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
+                                else( if (= ?y ?size) then ; Kolom kanan
+                                    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+                                    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
+                                    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+                                    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+                                    (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
+                                    else ; Semua berhasil brow
+                                        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
+                                        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+                                        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
+                                        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+                                        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+                                        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
+                                        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+                                        (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
+    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
+    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
+    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
+    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
+    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
+    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
+    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
+    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
+    
     (retract ?f) 
 )
-
 (defrule openBoxZeroValue
     ; buka box sekitar box dengan value 0
     (opened(x ?x)(y ?y))
     (boxValue(x ?x)(y ?y)(value 0))
+    (sizeBoardPython(n ?size))
     =>
-    (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
-    (assert (select (x (+ ?x 1)) (y ?y)))
-    (assert (select (x (+ ?x 1)) (y (- ?y 1))))
-    (assert (select (x ?x) (y (- ?y 1))))
-    (assert (select (x ?x) (y (+ ?y 1))))
-    (assert (select (x (- ?x 1)) (y (- ?y 1))))
-    (assert (select (x (- ?x 1)) (y ?y)))
-    (assert (select (x (- ?x 1)) (y (+ ?y 1))))
+    (if (and (= ?x 0) (= ?y 0)) then ;Kiri atas
+        (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
+        (assert (select (x (+ ?x 1)) (y ?y)))
+        (assert (select (x ?x) (y (+ ?y 1))))
+        else ( if (and (= ?x 0) (= ?y ?size)) then  ; Kanan atas 
+            (assert (select (x (+ ?x 1)) (y ?y)))
+            (assert (select (x (+ ?x 1)) (y (- ?y 1))))
+            (assert (select (x ?x) (y (- ?y 1))))
+            else( if (and (= ?x ?size) (= ?y 0)) then; Kiri bawah
+                (assert (select (x (- ?x 1)) (y ?y)))
+                (assert (select (x (- ?x 1)) (y (+ ?y 1))))
+                (assert (select (x ?x) (y (+ ?y 1)))) 
+                else ( if (and (= ?x ?size) (= ?y ?size)) then ; Kanan Bawah
+                    (assert (select (x (- ?x 1)) (y ?y)))
+                    (assert (select (x (- ?x 1)) (y (- ?y 1))))
+                    (assert (select (x ?x) (y (- ?y 1)))) 
+                    else ( if (= ?x 0) then ; Baris Atas
+                        (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
+                        (assert (select (x (+ ?x 1)) (y ?y)))
+                        (assert (select (x (+ ?x 1)) (y (- ?y 1))))
+                        (assert (select (x ?x) (y (- ?y 1))))
+                        (assert (select (x ?x) (y (+ ?y 1))))
+                        else( if (= ?y 0) then ; Kolom kiri 
+                            (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
+                            (assert (select (x (+ ?x 1)) (y ?y)))
+                            (assert (select (x ?x) (y (+ ?y 1))))
+                            (assert (select (x (- ?x 1)) (y ?y)))
+                            (assert (select (x (- ?x 1)) (y (+ ?y 1))))
+                            else( if (= ?x ?size) then ; Baris bawah
+                                (assert (select (x ?x) (y (- ?y 1))))
+                                (assert (select (x ?x) (y (+ ?y 1))))
+                                (assert (select (x (- ?x 1)) (y (- ?y 1))))
+                                (assert (select (x (- ?x 1)) (y ?y)))
+                                (assert (select (x (- ?x 1)) (y (+ ?y 1))))
+                                else( if (= ?y ?size) then ; Kolom kanan
+                                    (assert (select (x (+ ?x 1)) (y ?y)))
+                                    (assert (select (x (+ ?x 1)) (y (- ?y 1))))
+                                    (assert (select (x ?x) (y (- ?y 1))))
+                                    (assert (select (x (- ?x 1)) (y (- ?y 1))))
+                                    (assert (select (x (- ?x 1)) (y ?y)))
+                                    else ; Semua berhasil brow
+                                        (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
+                                        (assert (select (x (+ ?x 1)) (y ?y)))
+                                        (assert (select (x (+ ?x 1)) (y (- ?y 1))))
+                                        (assert (select (x ?x) (y (- ?y 1))))
+                                        (assert (select (x ?x) (y (+ ?y 1))))
+                                        (assert (select (x (- ?x 1)) (y (- ?y 1))))
+                                        (assert (select (x (- ?x 1)) (y ?y)))
+                                        (assert (select (x (- ?x 1)) (y (+ ?y 1))))       
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
+    ; (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
+    ; (assert (select (x (+ ?x 1)) (y ?y)))
+    ; (assert (select (x (+ ?x 1)) (y (- ?y 1))))
+    ; (assert (select (x ?x) (y (- ?y 1))))
+    ; (assert (select (x ?x) (y (+ ?y 1))))
+    ; (assert (select (x (- ?x 1)) (y (- ?y 1))))
+    ; (assert (select (x (- ?x 1)) (y ?y)))
+    ; (assert (select (x (- ?x 1)) (y (+ ?y 1))))       
 )
