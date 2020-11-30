@@ -432,6 +432,7 @@
     =>
     (assert(opened(x ?x) (y ?y)))
     (assert(markMine(x ?x) (y ?y))) 
+    (printout t "Mine yang di Flag: ( " ?x " , " ?y " )" crlf)
     (retract ?f)
     (modify ?f1 (n (- ?nilai 1)))
 )

@@ -66,10 +66,10 @@ if __name__ == "__main__":
             
 
     # facts
-    for fact in env.facts():
-        print(fact)
+    # for fact in env.facts():
+    #     print(fact)
     # run clips
     env.run()
     # facts
-    for fact in env.facts():
-        print(fact)
+    # for fact in env.facts():
+    #     print(fact)
