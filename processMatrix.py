@@ -1,6 +1,3 @@
-from clips import Environment
-
-
 def generateBoardValue(size,listOfMines):
     '''
     Fungsi untuk mengembalikan board matriks yang sudah berisikan nilai
@@ -32,10 +29,19 @@ def generateBoardValue(size,listOfMines):
     
     return board
 
-def addToClips(size,board):
-    for i in range(size):
-        for j in range(size):
-            var=str(i)+"_"+str(j)
-            var=clips.BuildGlobal("x",board[i][j])
+def addOneFactsToClips(value,x,y,):
+    fact_string = "(boxValuePython(x "+str(x)+")(y "+str(y)+")(value "+str(value)+"))"
+    return fact_string
 
-       
+
+def addFactsSizeMines(n):
+    fact_string="(banyakMinesPython(n "+str(n)+"))"
+    return fact_string
+
+def addOneFactsKoordMines(x,y):
+    fact_string="(minesKoordpython(x "+str(x)+")(y "+str(y)+"))"
+    return fact_string
+
+def addFactsSizeBoard(n):
+    fact_string="(sizeBoardPython(n "+str(n)+"))"
+    return fact_string

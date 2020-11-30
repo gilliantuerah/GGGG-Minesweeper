@@ -1,4 +1,6 @@
-from processMatrix import generateBoardValue,addToClips
+from processMatrix import *
+from clips import Environment,Symbol
+# import clips
 
 def inputFromUser():
     '''
@@ -23,7 +25,7 @@ def inputFromUser():
         listOfMines.append(koordinat)
 
     # mengembalikan semua masukan yang diperoleh
-    return (size,listOfMines)
+    return (size,listOfMines,n)
 
 def printBoard(size,board):
     '''
@@ -37,7 +39,37 @@ def printBoard(size,board):
                 print(board[i][j],end=" ")
 
 if __name__ == "__main__":
-    size,listOfMines=inputFromUser()
+    size,listOfMines,n=inputFromUser()
     board=generateBoardValue(size,listOfMines)
-    addToClips(size,board)
     printBoard(size,board)
+    # load clips
+    env = Environment()
+    env.load('minesweeper.clp')
+    # add facts jumlah mines
+    insertFactsMine=addFactsSizeMines(n)
+    env.assert_string(insertFactsMine)
+    # add facts size board
+    insertFactsSize=addFactsSizeBoard(size)
+    env.assert_string(insertFactsSize)
+    # add facts mines coord 
+    for m in listOfMines:
+        koordx=m[0]
+        koordy=m[1]
+        insertFactsMinesKoord=addOneFactsKoordMines(koordx,koordy)
+        env.assert_string(insertFactsMinesKoord)
+    # add facts to clips
+    for i in range (size):
+        for j in range (size):
+            insertFacts=addOneFactsToClips(board[i][j],i,j)
+            # print(insertFacts)
+            env.assert_string(insertFacts)
+            
+
+    # facts
+    for fact in env.facts():
+        print(fact)
+    # run clips
+    env.run()
+    # facts
+    for fact in env.facts():
+        print(fact)
