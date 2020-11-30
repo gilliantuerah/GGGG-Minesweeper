@@ -38,6 +38,8 @@ def printBoard(size,board):
             else:
                 print(board[i][j],end=" ")
 def welcome():
+    print()
+    print()
     print("           _      ")                                             
     print("          (_)          ")                                        
     print(" _ __ ___  _ _ __   ___  _____      _____  ___ _ __   ___ _ __ ") 
@@ -51,6 +53,10 @@ def welcome():
     print("             (     .'   \  |   |   /  .'   ` /   \\") 
     print("             `--.  |    |  |   `  /   |----' |   '") 
     print("             \___.' `._.' /\__  \/    `.___, /") 
+    print()
+    print()
+    print()
+
 
 if __name__ == "__main__":
     welcome()
