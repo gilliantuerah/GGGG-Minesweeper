@@ -37,8 +37,23 @@ def printBoard(size,board):
                 print(board[i][j])
             else:
                 print(board[i][j],end=" ")
+def welcome():
+    print("           _      ")                                             
+    print("          (_)          ")                                        
+    print(" _ __ ___  _ _ __   ___  _____      _____  ___ _ __   ___ _ __ ") 
+    print("| '_ ` _ \| | '_ \ / _ \/ __\ \ /\ / / _ \/ _ \ '_ \ / _ \ '__|") 
+    print("| | | | | | | | | |  __/\__ \\\ V  V /  __/  __/ |_) |  __/ |   ") 
+    print("|_| |_| |_|_|_| |_|\___||___/ \_/\_/ \___|\___| .__/ \___|_|   ") 
+    print("                                              | |              ") 
+    print("                                              |_|") 
+    print("                                 .                      ") 
+    print("              ____   __.   |   _   __   ___  .___ ") 
+    print("             (     .'   \  |   |   /  .'   ` /   \\") 
+    print("             `--.  |    |  |   `  /   |----' |   '") 
+    print("             \___.' `._.' /\__  \/    `.___, /") 
 
 if __name__ == "__main__":
+    welcome()
     size,listOfMines,n=inputFromUser()
     board=generateBoardValue(size,listOfMines)
     printBoard(size,board)
@@ -66,8 +81,7 @@ if __name__ == "__main__":
             
 
     # facts
-    # for fact in env.facts():
-    #     print(fact)
+    
     # run clips
     # env.run()
     # facts
@@ -112,4 +126,10 @@ if __name__ == "__main__":
         for row in range (size):
             for col in range(size):
                 print(matrixarray[row][col], end= " ")
-            print()      
+            print()
+
+    print("Mines yang diprediksi oleh agen adalah sebagai berikut: ")
+    for i in range(size):
+        for j in range(size):
+            if(matrixarray[i][j]=="m"):
+                print("Flag mine pada posisi: ( " +str(i)+ " , " +str(j)+ " )")      

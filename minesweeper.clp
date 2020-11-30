@@ -99,25 +99,6 @@
 ;;; Rule untuk inisialisasi nilai parameter pada suatu boxValue
 ;;; *****************
 
-; (defrule countunopened
-;     ;;;;; BELUM HANDLE KOTAK PINGGIRAN ;;;;;
-;     ;; box blm dicek ;;
-;     ; opened -> flag dan non flag ;
-;     ; ?f1 <- (boxValue (x ?x) (y ?y) (value ?value) (flagcount ?flagcount) (unopened 99))
-;     ?f <- (boxValue (x ?x) (y ?y) (value ?value) (flagcount ?flagcount) (unopened 0))
-;     =>
-;     (bind ?count 0)
-;     (if (opened (x (+ ?x 1)) (y (+ ?y 1)))  then (bind ?count (+ ?count 1)))
-;     (if (opened (x (+ ?x 1)) (y ?y)) then (bind ?count (+ ?count 1)))
-;     (if (opened (x (+ ?x 1)) (y (- ?y 1))) then (bind ?count (+ ?count 1)))
-;     (if (opened (x ?x) (y (+ ?y 1))) then (bind ?count (+ ?count 1)))
-;     (if (opened (x ?x) (y (- ?y 1))) then (bind ?count (+ ?count 1)))
-;     (if (opened (x (- ?x 1)) (y (- ?y 1))) then (bind ?count (+ ?count 1)))
-;     (if (opened (x (- ?x 1)) (y ?y)) then (bind ?count (+ ?count 1)))
-;     (if (opened (x (- ?x 1)) (y (+ ?y 1))) then (bind ?count (+ ?count 1)))
-;     ; (modify ?f1 (unopened (- 8 ?count)))
-; )
-
 (defrule countOpened1
     ?f <- (boxValue (x ?x) (y ?y) (value ?value) (flagcount ?flagcount) (opened ?opened))
     (opened (x ?a) (y ?b))
@@ -420,7 +401,7 @@
     =>
     (assert(opened(x ?x) (y ?y)))
     (assert(markMine(x ?x) (y ?y))) 
-    (printout t "Flag mine pada posisi: ( " ?x " , " ?y " )" crlf)
+    ; (printout t "Flag mine pada posisi: ( " ?x " , " ?y " )" crlf)
     (retract ?f)
     (modify ?f1 (n (- ?nilai 1)))
 )
@@ -493,14 +474,6 @@
             )
         )
     )
-    ; (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
-    ; (assert (select (x (+ ?x 1)) (y ?y)))
-    ; (assert (select (x (+ ?x 1)) (y (- ?y 1))))
-    ; (assert (select (x ?x) (y (- ?y 1))))
-    ; (assert (select (x ?x) (y (+ ?y 1))))
-    ; (assert (select (x (- ?x 1)) (y (- ?y 1))))
-    ; (assert (select (x (- ?x 1)) (y ?y)))
-    ; (assert (select (x (- ?x 1)) (y (+ ?y 1))))
 )
 ;;; *********************
 ;;; Rule 3: Kalo value == jumlah flag, buka yang belum dibuka
@@ -529,7 +502,7 @@
     (assert(opened(x ?x)(y ?y)))
     (assert(boxValue (x ?x)(y ?y)(value ?val)(flagcount 0)(opened 0)))
     ;print langkah
-    (printout t "Membuka tile pada posisi: ( " ?x " , " ?y " ) dengan nilai: " ?val crlf)
+    ; (printout t "Membuka tile pada posisi: ( " ?x " , " ?y " ) dengan nilai: " ?val crlf)
     ; nambah fakta checkCountFlags
     (if (and (= ?x 0) (= ?y 0)) then ;Kiri atas
         (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
@@ -588,14 +561,7 @@
             )
         )
     )
-    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
-    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
-    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
-    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
-    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
-    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
-    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
-    ; (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
+  
     ; nambah fakta checkCountOpened
     (if (and (= ?x 0) (= ?y 0)) then ;Kiri atas
         (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
@@ -654,14 +620,7 @@
             )
         )
     )
-    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
-    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek ?y)))
-    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (- ?y 1))))
-    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (+ ?y 1))))
-    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek ?x) (yCek (- ?y 1))))
-    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (+ ?y 1))))
-    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek ?y)))
-    ; (assert(cekCountOpened (xHome ?x) (yHome ?y) (xCek (- ?x 1)) (yCek (- ?y 1))))
+
     
     (retract ?f) 
 )
@@ -728,12 +687,5 @@
             )
         )
     )
-    ; (assert (select (x (+ ?x 1)) (y (+ ?y 1))))
-    ; (assert (select (x (+ ?x 1)) (y ?y)))
-    ; (assert (select (x (+ ?x 1)) (y (- ?y 1))))
-    ; (assert (select (x ?x) (y (- ?y 1))))
-    ; (assert (select (x ?x) (y (+ ?y 1))))
-    ; (assert (select (x (- ?x 1)) (y (- ?y 1))))
-    ; (assert (select (x (- ?x 1)) (y ?y)))
-    ; (assert (select (x (- ?x 1)) (y (+ ?y 1))))       
+       
 )
