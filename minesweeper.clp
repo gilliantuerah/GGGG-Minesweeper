@@ -329,7 +329,7 @@
 )
 
 ;;; *************************************************************************************
-;;; Rule 1: Kalo jumlah unopened = value dari (kotak tersebut - jumlah flag) -> mark mine
+;;; Rule 1: Kalo jumlah unopened = (value dari kotak tersebut - jumlah flag) -> mark mine
 ;;; *************************************************************************************
 
 (defrule markval
@@ -420,7 +420,7 @@
     =>
     (assert(opened(x ?x) (y ?y)))
     (assert(markMine(x ?x) (y ?y))) 
-    (printout t "Mine yang di Flag: ( " ?x " , " ?y " )" crlf)
+    (printout t "Flag mine pada posisi: ( " ?x " , " ?y " )" crlf)
     (retract ?f)
     (modify ?f1 (n (- ?nilai 1)))
 )
@@ -528,6 +528,8 @@
     =>
     (assert(opened(x ?x)(y ?y)))
     (assert(boxValue (x ?x)(y ?y)(value ?val)(flagcount 0)(opened 0)))
+    ;print langkah
+    (printout t "Membuka tile pada posisi: ( " ?x " , " ?y " ) dengan nilai: " ?val crlf)
     ; nambah fakta checkCountFlags
     (if (and (= ?x 0) (= ?y 0)) then ;Kiri atas
         (assert(cekCountFlags (xHome ?x) (yHome ?y) (xCek (+ ?x 1)) (yCek (+ ?y 1))))
